@@ -23,8 +23,8 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+
+My five test questions cover specific topics in the Campus Life corpus, and each question has a corresponding document containing the needed information. I chose 4 of 5 because retrieval should succeed on most questions while allowing one question to be missed due to differences in wording or similarity between documents.
 
 ---
 
@@ -33,8 +33,8 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+
+The system is designed to answer questions using retrieved documents, so every answer should be traceable to a source rather than appearing as unsupported information. I chose all five because the source name is generated from the retrieved document metadata, making attribution an expected part of every in-corpus answer.
 
 ---
 
@@ -50,50 +50,28 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+
+The Campus Life corpus covers specific campus information rather than general world knowledge, so questions about topics such as sports, medicine, and programming should be clearly outside the corpus. I chose 4 of 5 because the gate should reject most clearly unrelated questions, while allowing for the possibility that one question may have a misleadingly similar embedding.
 
 ---
 
-## 4. Something about your chunks
+## 4. Chunks are self-contained
 
-<!-- YOU WRITE THIS ONE.
-
-     How would you know if your chunks were the right size? Name something
-     countable or observable.
-
-     Examples of the right shape — don't copy these, they should come from
-     what you actually saw in Milestone 3:
-       - "At least 4 of 5 sampled chunks read as a complete thought, with no
-          sentence cut in half at either end."
-       - "No chunk is shorter than 200 characters, since anything below that
-          in my corpus turned out to be a heading with no content under it." -->
-
-
+For at least 4 of my 5 test questions, the retrieved chunk that contains the answer can be understood without needing text from another chunk of the same document.
 
 **Why this target:**
 
-
+The Campus Life documents are mostly short, focused posts, and the chunks I inspected already contain complete thoughts about one topic. I chose 4 of 5 because keeping the relevant information together should make most answers understandable from a single retrieved chunk, while allowing for a question whose answer may depend on information spread across a longer document.
 
 ---
 
-## 5. Your choice
+## 5. Source attribution is correct
 
-<!-- YOU WRITE THIS ONE TOO.
-
-     Pick something you actually care about getting right. It could be about
-     speed, about refusals, about a particular kind of question your corpus
-     handles badly, about source attribution being correct rather than merely
-     present — anything, as long as it names a number or an observable
-     outcome. -->
-
-
+For at least 4 of my 5 test questions, the source document named in the answer is the document that contains the information used to answer the question.
 
 **Why this target:**
 
-
-
----
+The Campus Life corpus contains many separate documents covering specific administrative and campus topics, so an answer could name a real document without that document actually supporting the answer. Requiring 4 of 5 correct source attributions tests whether the system is connecting its answer to the retrieved evidence rather than merely displaying a source name.
 
 <!-- ─────────────────────────────────────────────────────────────────────────
      UNIT 2 — read this before you change anything above.
