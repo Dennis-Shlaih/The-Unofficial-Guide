@@ -90,26 +90,28 @@ The good: the shared-bathroom-between-two-rooms arrangement is the best compromi
      visible. Milestone 4. -->
 
 **Question:**
-
+What is the first step in a grade appeal, and how many days does a student have to raise it?
 **Answer:**
 
 ```
+The first step in a grade appeal is with the instructor, and a student has fifteen days from the grade posting to raise it (admin_grade_appeals.txt).
+
+Sources retrieved: admin_add_drop_deadline.txt, admin_grade_appeals.txt, admin_pass_fail_option.txt, course_stat_150.txt, course_stat_150_exams.txt
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** 0.55
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
-
-| Question | In corpus? | Best distance |
-|---|---|---|
-|  |  |  |
+Question | In corpus? | Best distance
+What determines the housing lottery order for juniors and seniors?  |	Yes | 0.2035
+How late can a student drop a course, and what happens if they drop it after week two?  |	Yes | 0.2917
+Do dining dollars roll over from the spring semester to the following fall semester? | Yes | 0.2169
+What is the first step in a grade appeal, and how many days does a student have to raise it? |	Yes | 0.2112
+How many times can a student change their meal plan tier, and when can they make the change? |	Yes | 0.2015
+What is the capital of Mongolia? |	No |	0.8246
+How do I change the oil in a diesel engine? | No |	0.9340
+Who won the 1994 World Cup? |	No |	0.8859
+What is the recommended dosage of ibuprofen for a headache? | No |0.8442 
+How do I write a for loop in Rust? | No | 0.8960
 
 ## How I Used AI
 
