@@ -124,9 +124,9 @@ How do I write a for loop in Rust? | No | 0.8960
 
      Milestone 5. -->
 
-**1.**
+**1.** I used CoPilot to write the code for the split_documents function in chunker.py. I kept the 800-character maximum and used zero overlap because the corpus is mostly short, focused posts. After running python app.py chunks, I checked the resulting chunks and confirmed that the sample chunks were complete and understandable.
 
-**2.**
+**2.** I used CoPilot to help interpret the retrieval distances from my five in-corpus and five out-of-scope questions. It helped me identify the gap between the hardest in-corpus match (0.2917) and the closest out-of-scope match (0.8246). Based on those actual results, I chose 0.55 as my relevance cutoff rather than simply keeping the starter value. I then used the cutoff in my configuration and verified that the five in-corpus questions passed while the five out-of-scope questions were rejected.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
