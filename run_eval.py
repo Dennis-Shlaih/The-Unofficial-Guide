@@ -47,8 +47,7 @@ def load_scorer():
         import scorer  # noqa: PLC0415
     except ImportError:
         return None
-    judge = getattr(scorer, "judge", None)
-    return judge if callable(judge) else None
+    return scorer
 
 
 def run_once(question: str, top_k, threshold, corpus, variant):
@@ -91,7 +90,10 @@ def main():
         )
         sys.exit(1)
 
-    judge = load_scorer()
+    scorer = load_scorer()
+    judge = getattr(scorer, "judge", None) if scorer else None
+    judge_self_contained = getattr(scorer, "judge_self_contained", None) if scorer else None
+    judge_source_attribution = getattr(scorer, "judge_source_attribution", None) if scorer else None
     if judge is None:
         print("No scorer.py found — running unscored. Verdict column will be blank.")
         print("You'll build scorer.py in class in unit 2.\n")
@@ -108,12 +110,22 @@ def main():
         print(f"\n{question}")
 
         run_results = []
+        self_contained_results = []
+        source_attribution_results = []
         for run in range(1, args.runs + 1):
             answer, results, decision = run_once(
                 question, top_k, threshold, corpus, args.variant
             )
             passed = judge(question, expects, answer, results) if judge else None
             run_results.append(passed)
+            self_contained_results.append(
+                judge_self_contained(question, expects, answer, results)
+                if callable(judge_self_contained) else None
+            )
+            source_attribution_results.append(
+                judge_source_attribution(question, expects, answer, results)
+                if callable(judge_source_attribution) else None
+            )
 
             mark = {True: "pass", False: "fail", None: "—"}[passed]
             print(f"  run {run}: {mark}  (best distance {decision.best_distance:.3f})")
@@ -129,7 +141,15 @@ def main():
                 }
             )
 
-        rows.append({"question": question, "expects": expects, "runs": run_results})
+        rows.append(
+            {
+                "question": question,
+                "expects": expects,
+                "runs": run_results,
+                "self_contained": self_contained_results,
+                "source_attribution": source_attribution_results,
+            }
+        )
 
     gate_rows = check_out_of_scope(top_k, threshold, corpus, args.variant)
 
@@ -210,6 +230,55 @@ def write_report(rows, transcript, gate_rows, args, corpus, top_k, threshold, sc
             cells.append({True: "pass", False: "fail", None: " "}[passed])
         question = row["question"].replace("|", "\\|")
         lines.append(f"| {question} | {' | '.join(cells)} |")
+
+    has_chunk_or_source_checks = any(
+        passed is not None
+        for row in rows
+        for check in (row["self_contained"], row["source_attribution"])
+        for passed in check
+    )
+    if has_chunk_or_source_checks:
+        lines += [
+            "",
+            "## Chunk and source checks",
+            "",
+            "Self-containment is scored as whether one retrieved chunk, by itself, "
+            "lexically supports the answer. This is a repeatable proxy, not a "
+            "replacement for human judgment of full context. Source attribution "
+            "passes only when every cited filename has a retrieved chunk that "
+            "supports the answer.",
+            "",
+            "| Question | Single-chunk support by run | Cited-source support by run |",
+            "|---|---|---|",
+        ]
+        for row in rows:
+            question = row["question"].replace("|", "\\|")
+            chunk_checks = ", ".join(
+                {True: "pass", False: "fail", None: "—"}[passed]
+                for passed in row["self_contained"]
+            )
+            source_checks = ", ".join(
+                {True: "pass", False: "fail", None: "—"}[passed]
+                for passed in row["source_attribution"]
+            )
+            lines.append(f"| {question} | {chunk_checks} | {source_checks} |")
+
+        for name, key in (
+            ("Single-chunk support", "self_contained"),
+            ("Cited-source support", "source_attribution"),
+        ):
+            if not any(row[key] and row[key][0] is not None for row in rows):
+                continue
+            counts = [
+                sum(row[key][run] is True for row in rows)
+                for run in range(n)
+            ]
+            lines.append("")
+            lines.append(
+                f"{name} per run: "
+                + "; ".join(f"Run {run + 1}: {count}/{len(rows)}" for run, count in enumerate(counts))
+                + "."
+            )
 
     if not scored:
         lines += [
