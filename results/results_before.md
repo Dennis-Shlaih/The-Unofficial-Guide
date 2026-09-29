@@ -7,10 +7,6 @@
 - Runs per question: 3, caching off
 - When: 2026-09-28 20:10
 
-This table is one row per QUESTION. The run log your README asks for is
-one row per CRITERION, so aggregate these into it — criterion 1 is how many
-of your questions had the answer in the retrieved chunks, and so on.
-
 | Question | Run 1 | Run 2 | Run 3 |
 |---|---|---|---|
 | What determines the housing lottery order for juniors and seniors? | pass | pass | pass |
