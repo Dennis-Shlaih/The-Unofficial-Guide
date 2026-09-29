@@ -272,9 +272,11 @@ output as text, not a description of it.
 
 ## Diagnoses
 
-4. Chunks are self-contained: MISSED. The misses were the housing-lottery, add/drop, and grade-appeal questions. This is because chunking did not split their evidence. As a result, each answer is present in one source document, which split_documents keeps as one chunk. The failures come from the scorer after generation because it compares the whole answer with one chunk using a lexical-similarity threshold. Paraphrased answers can easily fail that check even when the chunk contains the complete and understandable answer. The other two answers pass because their wording is closer to the source.
 
-5. Source attribution is correct: MISSED. The same 3 answers name the documents that contain their information, and retrieval returned those documents. So the misses do not appear to come from loading, chunking, embedding, retrieval, or the choice of source in generation. The attribution scorer matches the cited filename to a retrieved source, then applies the same whole-answer lexical check. As a result, that check will reject the paraphrases and label the citations as unsupported. Thus, there is a measurement problem in the scorer, which remains outside of the 5 pipeline stages.
+**4. Chunks are self-contained: MISSED.** The relevant pipeline stage is **generation**. The retrieved chunks contained the information needed to answer the housing-lottery, add/drop, and grade-appeal questions, but the generated answers paraphrased the source wording. The evaluator then compared the generated answer against a single retrieved chunk using lexical overlap. Because generation changed the wording of the retrieved evidence, the scorer did not recognize those answers as sufficiently supported. The mechanism was therefore that the **generation stage produced paraphrased answers**, which reduced lexical overlap with the retrieved chunks used by the self-containment check.
+
+**5. Source attribution is correct: MISSED.** The relevant pipeline stage is also **generation**. The generated answers named sources that were actually retrieved, but the evaluator required the cited source's chunk to have enough lexical overlap with the full generated answer. For the housing-lottery, add/drop, and grade-appeal questions, the answer was a paraphrase of the retrieved source rather than a close wording match. This caused the source-attribution check to fail even though the correct source was retrieved. The mechanism was that the **generation stage paraphrased information from the retrieved source**, causing the evaluator's lexical support check to reject the citation.
+
 
 ## The Improvement
 
