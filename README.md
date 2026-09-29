@@ -178,31 +178,18 @@ How do I write a for loop in Rust? | No | 0.8960
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunk contains the answer | MET | All 5 questions had the answer in their retrieved chunks across all 3 runs, meeting the 4-of-5 target. |
+| 2 | Every answer names a source | MET  | The scorer found that 5 of 5 of the questions includes a source in the answer in each one of the 3 runs. |
+| 3 | Gate stops out-of-corpus questions | MET | The scorer found that 5 of 5 of the out-of-corpus questions are stopped by the gate. |
+| 4 | Chunks are self-contained | MISSED | The scorer found one retrieved chunk that independently supported the answer for 2 of 5 questions in each of the three runs, below the 4-of-5 target. This is a lexical proxy for whether the chunk is understandable on its own. |
+| 5 | Source attribution is correct | MISSED | The cited-source check found a retrieved chunk from the named source supporting the answer for 2 of 5 questions in each of the three runs, below the 4-of-5 target. |
 
 ## Diagnoses
 
-<!-- For each miss: which stage caused it, and how. The stage alone isn't
-     enough — you need the mechanism.
+4. Chunks are self-contained: MISSED by the automated check. For the housing-lottery question, `admin_housing_lottery.txt` has the credit-hours rule and random tie-break together in one chunk. For the add/drop question, `admin_add_drop_deadline.txt` has both the week-six deadline and the W-after-week-two rule together. For the grade-appeal question, `admin_grade_appeals.txt` has the instructor-first step and fifteen-day limit together. These are short documents, so `chunker.py::split_documents` keeps each as one chunk, and retrieval returns those chunks. The failure happens after generation in `scorer.py`: it compares the entire answer against one chunk using token-set similarity with a threshold of 80. The generated paraphrases fall below that lexical threshold, although each chunk contains the complete answer. Thus these results do not show a chunking or retrieval failure; they show that the automated proxy can mistake different wording for missing context.
 
-     Not a diagnosis: "Question 3 didn't work."
-     A diagnosis:     "Question 3 asks about laundry costs. The answer is in
-                       one sentence that got split across two chunks, so
-                       neither chunk on its own contains it."
+5. Source attribution is correct: MISSED by the automated check. In those same three answers, generation names the matching source file, and that file is among the retrieved results: `admin_housing_lottery.txt`, `admin_add_drop_deadline.txt`, or `admin_grade_appeals.txt`. The matching source chunks contain the facts used in the answers. `scorer.py::judge_source_attribution` finds the cited filename, but then requires the whole generated answer to pass the same token-set similarity threshold against that chunk. Because the paraphrases fail this check, the scorer marks the correct citations unsupported. Loading, chunking, embedding, and retrieval supplied the right evidence; generation cited its source; the false negative is in the scorer after generation, outside the five pipeline stages.
 
-     The five stages: loading → chunking → embedding → retrieval → generation.
-
-     Look for a pattern. If three misses all ask about numbers, that's one
-     problem, not three.
-
-     Missed nothing? Say so, then say honestly whether your targets were set
-     low, and which one you'd tighten and to what.
-
-     Milestone 3. -->
 
 ## The Improvement
 
